@@ -1,7 +1,8 @@
 #include <iostream>
+#include <FuzzyTTT.hpp>
 
 int main(int argc, char** argv)
 {
-    std::cout << "Hello, World!" << std::endl;
+    fttt::FuzzyTicTacToe fttt_game;
     return 0;
 }
