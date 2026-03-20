@@ -1,5 +1,5 @@
 #include <iostream>
-#include <FuzzyTTT.hpp>
+#include <FTTTBoard.hpp>
 
 int main(int argc, char** argv)
 {

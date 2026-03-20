@@ -1,6 +1,6 @@
 #include <Cell.hpp>
 #include <Exceptions.hpp>
-#include <FuzzyTTT.hpp>
+#include <FTTTBoard.hpp>
 #include <gmpxx.h>
 
 namespace fttt

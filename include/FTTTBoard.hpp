@@ -1,5 +1,5 @@
-#ifndef __FUZZY_TTT_INCLUDE_GUARD__
-#define __FUZZY_TTT_INCLUDE_GUARD__
+#ifndef __FTTTBOARD_INCLUDE_GUARD__
+#define __FTTTBOARD_INCLUDE_GUARD__
 #include <array>
 #include <cstdint>
 #include <Cell.hpp>
@@ -22,4 +22,4 @@ private:
 
 } // namespace fttt
 
-#endif // !__FUZZY_TTT_INCLUDE_GUARD__
+#endif // !__FTTTBOARD_INCLUDE_GUARD__
