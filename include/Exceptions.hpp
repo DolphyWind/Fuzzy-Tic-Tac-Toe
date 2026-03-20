@@ -1,5 +1,5 @@
-#ifndef __EXCEPTIONS_INCLUDE_GUARD__
-#define __EXCEPTIONS_INCLUDE_GUARD__
+#ifndef __EXCEPTIONS_HPP__
+#define __EXCEPTIONS_HPP__
 #include <exception>
 
 class InvalidCellStateException : std::exception
@@ -10,4 +10,4 @@ class CellIsAlreadyOccupiedException : std::exception
 {
 };
 
-#endif // __EXCEPTIONS_INCLUDE_GUARD__
+#endif // __EXCEPTIONS_HPP__

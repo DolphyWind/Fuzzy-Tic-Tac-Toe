@@ -1,5 +1,5 @@
-#ifndef __FTTTBOARD_INCLUDE_GUARD__
-#define __FTTTBOARD_INCLUDE_GUARD__
+#ifndef __FTTTBOARD_HPP__
+#define __FTTTBOARD_HPP__
 #include <array>
 #include <cstdint>
 #include <Cell.hpp>
@@ -7,19 +7,22 @@
 namespace fttt
 {
 
+template<std::size_t N>
 class FTTTBoard
 {
 public:
+    typedef std::array<Cell, N> row_t;
+    typedef std::array<row_t, N> board_t;
     FTTTBoard();
 
     void place(std::uint8_t x, std::uint8_t y, bool is_x, const mpf_class& value);
-
+    board_t& get_board();
+    const board_t& get_board() const;
 private:
-    constexpr static std::uint8_t BOARD_SIZE = 3;
-
-    std::array<std::array<Cell, BOARD_SIZE>, BOARD_SIZE> m_board;
+    std::array<std::array<Cell, N>, N> m_board;
 };
 
 } // namespace fttt
 
-#endif // !__FTTTBOARD_INCLUDE_GUARD__
+#include "FTTTBoard.ipp"
+#endif // !__FTTTBOARD_HPP__

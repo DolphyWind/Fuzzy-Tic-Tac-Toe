@@ -1,5 +1,5 @@
-#ifndef __CELL_HPP_INCLUDE_GUARD__
-#define __CELL_HPP_INCLUDE_GUARD__
+#ifndef __CELL_HPP__
+#define __CELL_HPP__
 #include <Exceptions.hpp>
 #include <gmpxx.h>
 
@@ -29,4 +29,4 @@ private:
 };
 } // namespace ftt
 
-#endif // !__CELL_HPP_INCLUDE_GUARD__
+#endif // !__CELL_HPP__
