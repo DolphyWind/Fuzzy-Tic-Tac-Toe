@@ -6,7 +6,7 @@ class InvalidCellStateException : std::exception
 {
 };
 
-class CellOccupiedException : std::exception
+class CellIsAlreadyOccupiedException : std::exception
 {
 };
 

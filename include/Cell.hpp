@@ -5,7 +5,7 @@
 
 namespace fttt
 {
-enum class CellType
+enum class CellState
 {
     EMPTY = 0,
     X_CAPTURED = (1 << 1),
@@ -21,11 +21,11 @@ public:
     void set_cell(const mpf_class& x_value, const mpf_class& o_value);
     const mpf_class& get_Xval() const;
     const mpf_class& get_Oval() const;
-    CellType get_cell_type() const;
+    CellState get_cell_state() const;
 private:
     mpf_class m_Xval;
     mpf_class m_Oval;
-    CellType m_cellType;
+    CellState m_cellState;
 };
 } // namespace ftt
 

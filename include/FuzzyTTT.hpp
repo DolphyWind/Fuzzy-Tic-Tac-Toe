@@ -7,10 +7,12 @@
 namespace fttt
 {
 
-class FuzzyTicTacToe
+class FTTTBoard
 {
 public:
-    FuzzyTicTacToe();
+    FTTTBoard();
+
+    void place(std::uint8_t x, std::uint8_t y, bool is_x, const mpf_class& value);
 
 private:
     constexpr static std::uint8_t BOARD_SIZE = 3;
