@@ -45,7 +45,6 @@ int main(int argc, char** argv)
     {
         decay = args::get(decay_flag);
     }
-    std::println("{}", percentage);
 
     try {
         fttt::FTTTGame fttt_game{fttt::GameConfig{.capture_low_limit = percentage, .decay = decay}};

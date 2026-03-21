@@ -145,7 +145,7 @@ void FTTTGame::main_loop()
             {
                 for (auto& cell : row)
                 {
-                    if (cell.get_cell_state() != CellState::EMPTY)
+                    if (cell.get_cell_state() == CellState::EMPTY)
                     {
                         mpf_class x_val = cell.get_Xval();
                         mpf_class o_val = cell.get_Oval();
