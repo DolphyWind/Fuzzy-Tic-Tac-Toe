@@ -18,6 +18,7 @@ public:
     void place(std::uint8_t x, std::uint8_t y, bool is_x, const mpf_class& value);
     board_t& get_board();
     const board_t& get_board() const;
+    CellState check_winner();
 private:
     std::array<std::array<Cell, N>, N> m_board;
 };

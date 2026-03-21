@@ -5,10 +5,12 @@
 #define COLOR_RED ""
 #define COLOR_BLUE ""
 #define COLOR_RESET ""
+#define COLOR_HIGHLIGHT ""
 #else
 #define COLOR_RED "\033[31m"
 #define COLOR_BLUE "\033[34m"
 #define COLOR_RESET "\033[0m"
+#define COLOR_HIGHLIGHT "\033[47m"
 #endif
 
 

@@ -2,7 +2,6 @@
 #define __FTTTBOARD_IPP__
 
 #include "Cell.hpp"
-#include "Exceptions.hpp"
 #include "FTTTBoard.hpp"
 #include <cstddef>
 #include <gmpxx.h>
@@ -16,11 +15,6 @@ template<std::size_t N>
 void FTTTBoard<N>::place(std::uint8_t x, std::uint8_t y, bool is_x, const mpf_class& value)
 {
     Cell& current_cell = m_board.at(y).at(x);
-    if (current_cell.get_cell_state() != CellState::EMPTY)
-    {
-        throw CellIsAlreadyOccupiedException();
-    }
-
     mpf_class x_value = current_cell.get_Xval();
     mpf_class o_value = current_cell.get_Oval();
     if (is_x)
