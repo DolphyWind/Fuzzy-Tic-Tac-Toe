@@ -16,17 +16,17 @@ class Cell
 {
 public:
     Cell();
-    Cell(const mpf_class& capture_low_bound);
-    Cell(const mpf_class& x_value, const mpf_class& o_value, const mpf_class& capture_low_bound=mpq_class(1, 2));
+    Cell(const mpq_class& capture_low_bound);
+    Cell(const mpq_class& x_value, const mpq_class& o_value, const mpq_class& capture_low_bound=mpq_class(1, 2));
 
-    void set_cell(const mpf_class& x_value, const mpf_class& o_value);
-    const mpf_class& get_Xval() const;
-    const mpf_class& get_Oval() const;
+    void set_cell(const mpq_class& x_value, const mpq_class& o_value);
+    const mpq_class& get_Xval() const;
+    const mpq_class& get_Oval() const;
     CellState get_cell_state() const;
 private:
-    mpf_class m_capture_low_bound;
-    mpf_class m_Xval;
-    mpf_class m_Oval;
+    mpq_class m_capture_low_bound;
+    mpq_class m_Xval;
+    mpq_class m_Oval;
     CellState m_cellState;
 };
 } // namespace ftt

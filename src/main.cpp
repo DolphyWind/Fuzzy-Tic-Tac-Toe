@@ -4,11 +4,14 @@
 #include <cstdlib>
 #include <exception>
 #include <iostream>
-#include <print>
 
 int main(int argc, char** argv)
 {
-    args::ArgumentParser parser("Fuzzy Tic-Tac-Toe Implementation");
+    args::ArgumentParser parser(
+        "Fuzzy Tic-Tac-Toe",
+        "Fuzzy Tic-Tac-Toe, FTTT for short, is a variant of the classic Tic-Tac-Toe game. Instead "
+        "of putting one symbol each turn, in FTTT, you get to distribute it however you like."
+    );
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
     args::ValueFlag<int> percetage_flag(
         parser, "percentage", "Control the minimum percentage required to claim a cell", {'p', "percentage"}, 50);
@@ -46,10 +49,13 @@ int main(int argc, char** argv)
         decay = args::get(decay_flag);
     }
 
-    try {
-        fttt::FTTTGame fttt_game{fttt::GameConfig{.capture_low_limit = percentage, .decay = decay}};
+    try
+    {
+        fttt::FTTTGame fttt_game{fttt::GameConfig{.capture_low_bound = percentage, .decay = decay}};
         fttt_game.main_loop();
-    } catch(const std::exception& e) {
+    }
+    catch (const std::exception& e)
+    {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }

@@ -14,9 +14,16 @@
 namespace fttt
 {
 
-FTTTGame::FTTTGame(const GameConfig& config) : m_config(config), m_board(config.capture_low_limit), m_xturn(true) {
-    if(config.decay < 0) {
+FTTTGame::FTTTGame(const GameConfig& config)
+    : m_config(config), m_board(mpq_class(config.capture_low_bound, 100)), m_xturn(true)
+{
+    if (config.decay < 0)
+    {
         throw std::range_error{"Invalid decay value!"};
+    }
+    if (config.capture_low_bound < 0 || config.capture_low_bound > 100)
+    {
+        throw std::range_error{"Invalid percentage value!"};
     }
 }
 
@@ -130,15 +137,22 @@ void FTTTGame::input()
 
 void FTTTGame::main_loop()
 {
-    auto mpf_max = [](const mpf_class& a, const mpf_class& b) {
+    auto mpf_max = [](const mpq_class& a, const mpq_class& b) -> mpq_class {
         if (a < b)
             return b;
         return a;
     };
 
+    std::println("GAME CONFIGURATION");
+    std::println("Lower bound to capture: {}%", m_config.capture_low_bound);
+    std::println("Decay: {}", m_config.decay);
+    mpq_class decay_value = mpq_class(m_config.decay, 100);
+
     do
     {
         this->input();
+        if (m_board.game_ended())
+            break;
         if (m_config.decay != 0)
         {
             for (auto& row : m_board.get_board())
@@ -147,17 +161,19 @@ void FTTTGame::main_loop()
                 {
                     if (cell.get_cell_state() == CellState::EMPTY)
                     {
-                        mpf_class x_val = cell.get_Xval();
-                        mpf_class o_val = cell.get_Oval();
-                        x_val = mpf_max(mpf_class{0}, x_val - mpq_class(m_config.decay, 100));
-                        o_val = mpf_max(mpf_class{0}, o_val - mpq_class(m_config.decay, 100));
+                        mpq_class x_val = cell.get_Xval();
+                        mpq_class o_val = cell.get_Oval();
+                        x_val = mpf_max(mpq_class{0}, x_val - decay_value);
+                        o_val = mpf_max(mpq_class{0}, o_val - decay_value);
                         cell.set_cell(x_val, o_val);
                     }
                 }
             }
         }
-    } while (!m_board.game_ended());
+    } while (true);
 
+    std::println("Game Ended! Finalizing...");
+    this->m_board.finalize();
     this->print();
     CellState winner = m_board.check_winner();
     if (winner == CellState::X_CAPTURED)
@@ -197,8 +213,8 @@ void FTTTGame::print_row(const FTTTBoard::row_t& row, int highlight_col)
 
 void FTTTGame::print_cell_inner(const Cell& cell, std::uint8_t row, bool highlighted)
 {
-    const mpf_class& x_val = cell.get_Xval();
-    const mpf_class& o_val = cell.get_Oval();
+    const mpq_class& x_val = cell.get_Xval();
+    const mpq_class& o_val = cell.get_Oval();
     std::string highlight = (highlighted ? COLOR_HIGHLIGHT : "");
 
     std::ostringstream x_oss, o_oss;

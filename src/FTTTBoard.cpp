@@ -4,28 +4,23 @@
 #include "FTTTBoard.hpp"
 #include "Cell.hpp"
 #include <gmpxx.h>
-#include <stdexcept>
 #include <vector>
 
 namespace fttt
 {
-FTTTBoard::FTTTBoard(int capture_low_bound)
+FTTTBoard::FTTTBoard(const mpq_class& capture_low_bound)
 {
-    if (capture_low_bound < 0 || capture_low_bound > 100)
-    {
-        throw std::range_error{"Invalid percentage value!"};
-    }
     for (auto& row : m_board)
     {
-        for (auto& col : row) { col = Cell(mpq_class(capture_low_bound, 100)); }
+        for (auto& col : row) { col = Cell(capture_low_bound); }
     }
 }
 
-void FTTTBoard::place(std::uint8_t x, std::uint8_t y, bool is_x, const mpf_class& value)
+void FTTTBoard::place(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class& value)
 {
     Cell& current_cell = m_board.at(y).at(x);
-    mpf_class x_value = current_cell.get_Xval();
-    mpf_class o_value = current_cell.get_Oval();
+    mpq_class x_value = current_cell.get_Xval();
+    mpq_class o_value = current_cell.get_Oval();
     if (is_x)
         x_value += value;
     else
@@ -71,7 +66,7 @@ bool FTTTBoard::has_moves() const
     {
         for (const auto& cell : row)
         {
-            if (cell.get_cell_state() == CellState::EMPTY && (cell.get_Xval() + cell.get_Oval()) < 1)
+            if (cell.get_cell_state() == CellState::EMPTY && (cell.get_Xval() + cell.get_Oval()) < mpq_class{1})
             {
                 return true;
             }
@@ -80,9 +75,21 @@ bool FTTTBoard::has_moves() const
     return false;
 }
 
-bool FTTTBoard::game_ended() const
+bool FTTTBoard::game_ended() const { return (!has_moves()) || (check_winner() != CellState::EMPTY); }
+
+void FTTTBoard::finalize()
 {
-    return (!has_moves()) || (check_winner() != CellState::EMPTY);
+    for(auto& row : m_board)
+    {
+        for(auto& col : row)
+        {
+            if(col.get_cell_state() == CellState::EMPTY)
+            {
+                if(col.get_Xval() > col.get_Oval()) col.set_cell(mpq_class{1}, mpq_class{0});
+                else if(col.get_Oval() > col.get_Xval()) col.set_cell(mpq_class{0}, mpq_class{1});
+            }
+        }
+    }
 }
 
 } // namespace fttt

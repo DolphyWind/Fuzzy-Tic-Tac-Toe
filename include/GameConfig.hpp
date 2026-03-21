@@ -6,7 +6,7 @@ namespace fttt
 
 struct GameConfig
 {
-    int capture_low_limit = 50;
+    int capture_low_bound = 50;
     int decay = 0;
 };
 
