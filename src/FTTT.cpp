@@ -172,9 +172,13 @@ void FTTTGame::main_loop()
         }
     } while (true);
 
-    std::println("Game Ended! Finalizing...");
-    this->m_board.finalize();
+    if (m_board.check_winner() == CellState::EMPTY)
+    {
+        std::println("Game Ended! Finalizing...");
+        this->m_board.finalize();
+    }
     this->print();
+
     CellState winner = m_board.check_winner();
     if (winner == CellState::X_CAPTURED)
     {
