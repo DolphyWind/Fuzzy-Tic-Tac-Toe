@@ -1,12 +1,14 @@
+#include "Cell.hpp"
 #include "Color.hpp"
 #include "Exceptions.hpp"
+#include "FTTTBoard.hpp"
 #include <FTTT.hpp>
 #include <gmp.h>
 #include <gmpxx.h>
 #include <iostream>
 #include <print>
+#include <sstream>
 #include <string>
-#include <string_view>
 
 namespace fttt
 {
@@ -16,7 +18,7 @@ FTTTGame::FTTTGame() : m_board(), m_xturn(true) {}
 void FTTTGame::print(int highlight_x, int highlight_y)
 {
     const auto& board = m_board.get_board();
-    for (std::uint8_t i = 0; i < BOARD_SIZE; ++i)
+    for (std::uint8_t i = 0; i < FTTTBoard::BOARD_SIZE; ++i)
     {
         const auto& row = board.at(i);
         int high_col = -1;
@@ -65,7 +67,7 @@ void FTTTGame::input()
     enter_row:
         std::print("Row number [0-2]: ");
         std::cin >> row;
-        if (row < 0 || row >= BOARD_SIZE)
+        if (row < 0 || row >= FTTTBoard::BOARD_SIZE)
         {
             std::println("Invalid row number!");
             std::cin.clear();
@@ -75,7 +77,7 @@ void FTTTGame::input()
     enter_col:
         std::print("Col number [0-2]: ");
         std::cin >> col;
-        if (col < 0 || col >= BOARD_SIZE)
+        if (col < 0 || col >= FTTTBoard::BOARD_SIZE)
         {
             std::println("Invalid col number!");
             std::cin.clear();
@@ -119,13 +121,24 @@ void FTTTGame::input()
 
 void FTTTGame::main_loop()
 {
-    do
+    do { this->input(); } while (m_board.check_winner() == CellState::EMPTY && m_board.has_moves());
+
+    this->print();
+    if (m_board.check_winner() == CellState::X_CAPTURED)
     {
-        this->input();
-    } while (true);
+        std::println("X WON!");
+    }
+    else if (m_board.check_winner() == CellState::O_CAPTURED)
+    {
+        std::println("O WON!");
+    }
+    else
+    {
+        std::println("TIE");
+    }
 }
 
-void FTTTGame::print_row(const FTTTBoard<BOARD_SIZE>::row_t& row, int highlight_col)
+void FTTTGame::print_row(const FTTTBoard::row_t& row, int highlight_col)
 {
     std::print("+");
     std::print("{}", std::string(CELL_PRINT_SIZE, '-'));
@@ -152,11 +165,13 @@ void FTTTGame::print_cell_inner(const Cell& cell, std::uint8_t row, bool highlig
     const mpf_class& o_val = cell.get_Oval();
     std::string highlight = (highlighted ? COLOR_HIGHLIGHT : "");
 
-    mp_exp_t exponent;
-    std::string x = x_val.get_str(exponent).substr(0, 2);
+    std::ostringstream x_oss, o_oss;
+    x_oss << x_val * 100;
+    o_oss << o_val * 100;
+    std::string x = x_oss.str().substr(0, 2);
+    std::string o = o_oss.str().substr(0, 2);
     if (x.size() < 2)
         x = std::string(2 - x.size(), '0') + x;
-    std::string o = o_val.get_str(exponent).substr(0, 2);
     if (o.size() < 2)
         o = std::string(2 - o.size(), '0') + o;
     switch (row)

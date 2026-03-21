@@ -1,13 +1,19 @@
 #include <Cell.hpp>
 #include <Exceptions.hpp>
 #include <gmpxx.h>
-#include <iostream>
 
 namespace fttt
 {
 
-Cell::Cell() : m_Xval(0), m_Oval(0), m_cellState(CellState::EMPTY) {}
-Cell::Cell(const mpf_class& x_value, const mpf_class& o_value) { set_cell(x_value, o_value); }
+Cell::Cell() : m_caputure_limit("0.5"), m_Xval(0), m_Oval(0), m_cellState(CellState::EMPTY) {}
+
+Cell::Cell(const mpf_class& capture_limit) : m_Xval(0), m_Oval(0), m_cellState(CellState::EMPTY)
+{ m_caputure_limit = capture_limit; }
+Cell::Cell(const mpf_class& x_value, const mpf_class& o_value, const mpf_class& capture_limit)
+{
+    m_caputure_limit = capture_limit;
+    set_cell(x_value, o_value);
+}
 
 void Cell::set_cell(const mpf_class& x_value, const mpf_class& o_value)
 {
@@ -19,13 +25,12 @@ void Cell::set_cell(const mpf_class& x_value, const mpf_class& o_value)
     {
         throw InvalidCellStateException{};
     }
-    const mpf_class half("0.5");
     m_cellState = CellState::EMPTY;
-    if (x_value > half)
+    if (x_value > m_caputure_limit)
     {
         m_cellState = CellState::X_CAPTURED;
     }
-    else if (o_value > half)
+    else if (o_value > m_caputure_limit)
     {
         m_cellState = CellState::O_CAPTURED;
     }

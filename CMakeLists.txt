@@ -9,6 +9,7 @@ set(SOURCE_FILES
     src/main.cpp
     src/Cell.cpp
     src/FTTT.cpp
+    src/FTTTBoard.cpp
 )
 
 find_package(GMPXX REQUIRED)

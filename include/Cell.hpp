@@ -8,21 +8,23 @@ namespace fttt
 enum class CellState
 {
     EMPTY = 0,
-    X_CAPTURED = (1 << 1),
-    O_CAPTURED = (1 << 2),
+    X_CAPTURED = (1 << 0),
+    O_CAPTURED = (1 << 1),
 };
 
 class Cell
 {
 public:
     Cell();
-    Cell(const mpf_class& x_value, const mpf_class& o_value);
+    Cell(const mpf_class& capture_limit);
+    Cell(const mpf_class& x_value, const mpf_class& o_value, const mpf_class& capture_limit=mpf_class{"0.5"});
 
     void set_cell(const mpf_class& x_value, const mpf_class& o_value);
     const mpf_class& get_Xval() const;
     const mpf_class& get_Oval() const;
     CellState get_cell_state() const;
 private:
+    mpf_class m_caputure_limit;
     mpf_class m_Xval;
     mpf_class m_Oval;
     CellState m_cellState;
