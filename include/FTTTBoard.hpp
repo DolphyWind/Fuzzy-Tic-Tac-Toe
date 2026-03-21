@@ -20,6 +20,7 @@ public:
     const board_t& get_board() const;
     CellState check_winner() const;
     bool has_moves() const;
+    bool game_ended() const;
 private:
     std::array<std::array<Cell, BOARD_SIZE>, BOARD_SIZE> m_board;
 };

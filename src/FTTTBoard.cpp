@@ -80,5 +80,10 @@ bool FTTTBoard::has_moves() const
     return false;
 }
 
+bool FTTTBoard::game_ended() const
+{
+    return (!has_moves()) || (check_winner() != CellState::EMPTY);
+}
+
 } // namespace fttt
 #endif // !__FTTTBOARD_CPP__

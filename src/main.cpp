@@ -1,5 +1,8 @@
 #include "FTTT.hpp"
+#include "GameConfig.hpp"
 #include "args.hxx"
+#include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <print>
 
@@ -17,18 +20,18 @@ int main(int argc, char** argv)
     catch (const args::Completion& e)
     {
         std::cout << e.what();
-        return 0;
+        return EXIT_SUCCESS;
     }
     catch (const args::Help&)
     {
         std::cout << parser;
-        return 0;
+        return EXIT_SUCCESS;
     }
     catch (const args::ParseError& e)
     {
         std::cerr << e.what() << std::endl;
         std::cerr << parser;
-        return 1;
+        return EXIT_FAILURE;
     }
 
     int percentage = 50;
@@ -44,7 +47,12 @@ int main(int argc, char** argv)
     }
     std::println("{}", percentage);
 
-    fttt::FTTTGame fttt_game{percentage, decay};
-    fttt_game.main_loop();
-    return 0;
+    try {
+        fttt::FTTTGame fttt_game{fttt::GameConfig{.capture_low_limit = percentage, .decay = decay}};
+        fttt_game.main_loop();
+    } catch(const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }

@@ -8,12 +8,17 @@
 #include <iostream>
 #include <print>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 namespace fttt
 {
 
-FTTTGame::FTTTGame(int capture_low_limit, int decay) : m_decay(decay), m_board(capture_low_limit), m_xturn(true) {}
+FTTTGame::FTTTGame(const GameConfig& config) : m_config(config), m_board(config.capture_low_limit), m_xturn(true) {
+    if(config.decay < 0) {
+        throw std::range_error{"Invalid decay value!"};
+    }
+}
 
 void FTTTGame::print(int highlight_x, int highlight_y)
 {
@@ -100,6 +105,10 @@ void FTTTGame::input()
             {
                 m_board.place(col, row, m_xturn, mpq_class(perc, 100));
                 total -= perc;
+                if (m_board.game_ended())
+                {
+                    break;
+                }
             }
             catch (const CellIsAlreadyOccupiedException& ex)
             {
@@ -121,14 +130,41 @@ void FTTTGame::input()
 
 void FTTTGame::main_loop()
 {
-    do { this->input(); } while (m_board.check_winner() == CellState::EMPTY && m_board.has_moves());
+    auto mpf_max = [](const mpf_class& a, const mpf_class& b) {
+        if (a < b)
+            return b;
+        return a;
+    };
+
+    do
+    {
+        this->input();
+        if (m_config.decay != 0)
+        {
+            for (auto& row : m_board.get_board())
+            {
+                for (auto& cell : row)
+                {
+                    if (cell.get_cell_state() != CellState::EMPTY)
+                    {
+                        mpf_class x_val = cell.get_Xval();
+                        mpf_class o_val = cell.get_Oval();
+                        x_val = mpf_max(mpf_class{0}, x_val - mpq_class(m_config.decay, 100));
+                        o_val = mpf_max(mpf_class{0}, o_val - mpq_class(m_config.decay, 100));
+                        cell.set_cell(x_val, o_val);
+                    }
+                }
+            }
+        }
+    } while (!m_board.game_ended());
 
     this->print();
-    if (m_board.check_winner() == CellState::X_CAPTURED)
+    CellState winner = m_board.check_winner();
+    if (winner == CellState::X_CAPTURED)
     {
         std::println("X WON!");
     }
-    else if (m_board.check_winner() == CellState::O_CAPTURED)
+    else if (winner == CellState::O_CAPTURED)
     {
         std::println("O WON!");
     }
