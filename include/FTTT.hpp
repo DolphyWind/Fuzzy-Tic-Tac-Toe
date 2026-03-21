@@ -10,13 +10,14 @@ namespace fttt
 class FTTTGame
 {
 public:
-    FTTTGame();
+    FTTTGame(int capture_low_bound=50, int decay=0);
 
     void print(int highlight_x=-1, int highlight_y=-1);
     void input();
     void main_loop();
 private:
     static constexpr std::uint8_t CELL_PRINT_SIZE = 5;
+    int m_decay;
     FTTTBoard m_board;
     bool m_xturn;
 

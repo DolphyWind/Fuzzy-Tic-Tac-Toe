@@ -13,7 +13,7 @@
 namespace fttt
 {
 
-FTTTGame::FTTTGame() : m_board(), m_xturn(true) {}
+FTTTGame::FTTTGame(int capture_low_limit, int decay) : m_decay(decay), m_board(capture_low_limit), m_xturn(true) {}
 
 void FTTTGame::print(int highlight_x, int highlight_y)
 {

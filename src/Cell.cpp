@@ -5,13 +5,13 @@
 namespace fttt
 {
 
-Cell::Cell() : m_caputure_limit("0.5"), m_Xval(0), m_Oval(0), m_cellState(CellState::EMPTY) {}
+Cell::Cell() : m_capture_low_bound(mpq_class(1, 2)), m_Xval(0), m_Oval(0), m_cellState(CellState::EMPTY) {}
 
-Cell::Cell(const mpf_class& capture_limit) : m_Xval(0), m_Oval(0), m_cellState(CellState::EMPTY)
-{ m_caputure_limit = capture_limit; }
-Cell::Cell(const mpf_class& x_value, const mpf_class& o_value, const mpf_class& capture_limit)
+Cell::Cell(const mpf_class& capture_low_bound) : m_Xval(0), m_Oval(0), m_cellState(CellState::EMPTY)
+{ m_capture_low_bound = capture_low_bound; }
+Cell::Cell(const mpf_class& x_value, const mpf_class& o_value, const mpf_class& capture_low_bound)
 {
-    m_caputure_limit = capture_limit;
+    m_capture_low_bound = capture_low_bound;
     set_cell(x_value, o_value);
 }
 
@@ -26,11 +26,11 @@ void Cell::set_cell(const mpf_class& x_value, const mpf_class& o_value)
         throw InvalidCellStateException{};
     }
     m_cellState = CellState::EMPTY;
-    if (x_value > m_caputure_limit)
+    if (x_value > m_capture_low_bound)
     {
         m_cellState = CellState::X_CAPTURED;
     }
-    else if (o_value > m_caputure_limit)
+    else if (o_value > m_capture_low_bound)
     {
         m_cellState = CellState::O_CAPTURED;
     }
