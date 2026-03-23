@@ -37,7 +37,7 @@ CellState FTTTBoard::check_winner() const
     using U = std::underlying_type_t<CellState>;
     using Triplet = std::array<const Cell* const, 3>;
     std::vector<Triplet> triplets{
-        {&m_board[0][0], &m_board[1][0], &m_board[1][0]},
+        {&m_board[0][0], &m_board[1][0], &m_board[2][0]},
         {&m_board[0][1], &m_board[1][1], &m_board[2][1]},
         {&m_board[0][2], &m_board[1][2], &m_board[2][2]},
         {&m_board[0][0], &m_board[0][1], &m_board[0][2]},

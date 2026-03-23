@@ -4,6 +4,7 @@
 #include "Cell.hpp"
 #include "GameConfig.hpp"
 #include "FTTTBoard.hpp"
+#include <optional>
 
 namespace fttt
 {
@@ -24,6 +25,7 @@ private:
 
     void print_row(const FTTTBoard::row_t& row, int highlight_col=-1);
     void print_cell_inner(const Cell& cell, std::uint8_t row, bool highlighted=false);
+    std::optional<int> parse_percentage(const std::string& percentage_input, int remaining, int current_val);
 };
 
 } // namespace fttt
