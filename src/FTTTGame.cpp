@@ -1,8 +1,8 @@
+#include "FTTTGame.hpp"
 #include "Cell.hpp"
 #include "Color.hpp"
-#include "Exceptions.hpp"
+#include "FTTTBase.hpp"
 #include "FTTTBoard.hpp"
-#include <FTTT.hpp>
 #include <cstdlib>
 #include <exception>
 #include <gmp.h>
@@ -16,18 +16,7 @@
 namespace fttt
 {
 
-FTTTGame::FTTTGame(const GameConfig& config)
-    : m_config(config), m_board(mpq_class(config.capture_low_bound, 100)), m_xturn(true)
-{
-    if (config.decay < 0)
-    {
-        throw std::range_error{"Invalid decay value!"};
-    }
-    if (config.capture_low_bound < 0 || config.capture_low_bound > 100)
-    {
-        throw std::range_error{"Invalid percentage value!"};
-    }
-}
+FTTTGame::FTTTGame(const GameConfig& config) : FTTTBase(config), m_xturn(true) {}
 
 void FTTTGame::print(int highlight_x, int highlight_y)
 {
@@ -107,14 +96,7 @@ void FTTTGame::input()
         mpq_class current_val;
         const Cell& current_cell = m_board.get_board().at(row).at(col);
 
-        if (m_xturn)
-        {
-            current_val = current_cell.get_Xval();
-        }
-        else
-        {
-            current_val = current_cell.get_Oval();
-        }
+        current_val = m_xturn ? current_cell.get_Xval() : current_cell.get_Oval();
         int current_val_int = static_cast<int>((100 * current_val.get_num().get_si()) / current_val.get_den().get_si());
 
         std::optional<int> percentage = this->parse_percentage(percentage_input, total, current_val_int);
@@ -142,20 +124,17 @@ void FTTTGame::input()
         }
         else if (yn.starts_with('y') || yn.starts_with('Y'))
         {
-            try
+            mpq_class dvalue{perc, 100};
+            if (m_board.is_valid_placement(col, row, m_xturn, dvalue))
             {
                 m_board.place(col, row, m_xturn, mpq_class(perc, 100));
                 total -= perc;
-                if (m_board.game_ended())
+                if (this->game_ended())
                 {
                     break;
                 }
             }
-            catch (const CellIsAlreadyOccupiedException& ex)
-            {
-                std::cout << "Cell is already occupied!\n";
-            }
-            catch (const InvalidCellStateException& ex)
+            else
             {
                 std::cout << "Placement is invalid!\n";
             }
@@ -171,49 +150,26 @@ void FTTTGame::input()
 
 void FTTTGame::main_loop()
 {
-    auto mpf_max = [](const mpq_class& a, const mpq_class& b) -> mpq_class {
-        if (a < b)
-            return b;
-        return a;
-    };
-
     std::cout << "GAME CONFIGURATION\n";
     std::cout << "Lower bound to capture: " << m_config.capture_low_bound << "%\n";
     std::cout << "Decay: " << m_config.decay << "\n";
-    mpq_class decay_value = mpq_class(m_config.decay, 100);
 
     do
     {
         this->input();
-        if (m_board.game_ended())
+        if (this->game_ended())
             break;
-        if (m_config.decay != 0)
-        {
-            for (auto& row : m_board.get_board())
-            {
-                for (auto& cell : row)
-                {
-                    if (cell.get_cell_state() == CellState::EMPTY)
-                    {
-                        mpq_class x_val = cell.get_Xval();
-                        mpq_class o_val = cell.get_Oval();
-                        x_val = mpf_max(mpq_class{0}, x_val - decay_value);
-                        o_val = mpf_max(mpq_class{0}, o_val - decay_value);
-                        cell.set_cell(x_val, o_val);
-                    }
-                }
-            }
-        }
+        this->apply_decay();
     } while (true);
 
-    if (m_board.check_winner() == CellState::EMPTY)
+    if (this->check_winner() == CellState::EMPTY)
     {
         std::cout << "Game Ended! Finalizing...\n";
-        this->m_board.finalize();
+        this->finalize();
     }
     this->print();
 
-    CellState winner = m_board.check_winner();
+    CellState winner = this->check_winner();
     if (winner == CellState::X_CAPTURED)
     {
         std::cout << "X WON!\n";

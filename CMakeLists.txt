@@ -8,8 +8,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(SOURCE_FILES
     src/main.cpp
     src/Cell.cpp
-    src/FTTT.cpp
+    src/FTTTBase.cpp
     src/FTTTBoard.cpp
+    src/FTTTGame.cpp
 )
 
 find_package(GMPXX REQUIRED)

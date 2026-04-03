@@ -19,10 +19,7 @@ public:
     void place(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class& value);
     board_t& get_board();
     const board_t& get_board() const;
-    CellState check_winner() const;
-    bool has_moves() const;
-    bool game_ended() const;
-    void finalize();
+    bool is_valid_placement(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class& value) const;
 private:
     std::array<std::array<Cell, BOARD_SIZE>, BOARD_SIZE> m_board;
 };

@@ -1,4 +1,4 @@
-#include "FTTT.hpp"
+#include "FTTTGame.hpp"
 #include "GameConfig.hpp"
 #include "args.hxx"
 #include <cstdlib>
@@ -51,7 +51,10 @@ int main(int argc, char** argv)
 
     try
     {
-        fttt::FTTTGame fttt_game{fttt::GameConfig{.capture_low_bound = percentage, .decay = decay}};
+        fttt::FTTTGame fttt_game{fttt::GameConfig{
+            .capture_low_bound = mpq_class(percentage, 100),
+            .decay = mpq_class(decay, 100),
+        }};
         fttt_game.main_loop();
     }
     catch (const std::exception& e)
