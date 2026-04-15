@@ -21,7 +21,7 @@ FTTTGame::FTTTGame(const GameConfig& config) : FTTTBase(config), m_xturn(true) {
 void FTTTGame::print(int highlight_x, int highlight_y)
 {
     const auto& board = m_board.get_board();
-    for (std::uint8_t i = 0; i < FTTTBoard::BOARD_SIZE; ++i)
+    for (std::uint8_t i = 0; i < board.size(); ++i)
     {
         const auto& row = board.at(i);
         int high_col = -1;
@@ -62,7 +62,7 @@ void FTTTGame::input()
         std::cin >> row;
         if (std::cin.eof())
             std::exit(0);
-        if (row < 0 || row >= FTTTBoard::BOARD_SIZE)
+        if (row < 0 || row >= m_board.get_board().size())
         {
             std::cout << "Invalid row number!\n";
             std::cin.clear();
@@ -74,13 +74,14 @@ void FTTTGame::input()
         std::cin >> col;
         if (std::cin.eof())
             std::exit(0);
-        if (col < 0 || col >= FTTTBoard::BOARD_SIZE)
+        if (col < 0 || col >= m_board.get_board().size())
         {
             std::cout << "Invalid col number!\n";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             goto enter_col;
         }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         this->print(col, row);
     enter_percentage:
         std::string percentage_input;
@@ -91,7 +92,7 @@ void FTTTGame::input()
                   << "[q]uarter\n"
                   << "[c]omplete to\n";
         std::cout << "Enter percentage: ";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::getline(std::cin, percentage_input);
         mpq_class current_val;
         const Cell& current_cell = m_board.get_board().at(row).at(col);
@@ -108,7 +109,7 @@ void FTTTGame::input()
         {
             std::cout << "Invalid percentage!\n";
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             goto enter_percentage;
         }
     confirm:
@@ -184,7 +185,7 @@ void FTTTGame::main_loop()
     }
 }
 
-void FTTTGame::print_row(const FTTTBoard::row_t& row, int highlight_col)
+void FTTTGame::print_row(const FTTTBoard<3>::row_t& row, int highlight_col)
 {
     std::cout << "+";
     std::cout << std::string(CELL_PRINT_SIZE, '-');

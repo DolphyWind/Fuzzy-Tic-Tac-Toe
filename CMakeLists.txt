@@ -9,7 +9,6 @@ set(SOURCE_FILES
     src/main.cpp
     src/Cell.cpp
     src/FTTTBase.cpp
-    src/FTTTBoard.cpp
     src/FTTTGame.cpp
 )
 

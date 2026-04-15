@@ -22,7 +22,7 @@ private:
     static constexpr std::uint8_t CELL_PRINT_SIZE = 5;
     bool m_xturn;
 
-    void print_row(const FTTTBoard::row_t& row, int highlight_col=-1);
+    void print_row(const FTTTBoard<3>::row_t& row, int highlight_col=-1);
     void print_cell_inner(const Cell& cell, std::uint8_t row, bool highlighted=false);
     std::optional<int> parse_percentage(const std::string& percentage_input, int remaining, int current_val);
 };

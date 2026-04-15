@@ -23,7 +23,7 @@ public:
     void finalize();
 protected:
     GameConfig m_config;
-    FTTTBoard m_board;
+    FTTTBoard<3> m_board;
 };
 
 }

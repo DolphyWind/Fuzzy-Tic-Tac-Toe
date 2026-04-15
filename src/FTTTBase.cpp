@@ -1,5 +1,7 @@
 #include "FTTTBase.hpp"
+#include "Cell.hpp"
 #include <array>
+#include <limits>
 #include <vector>
 
 namespace fttt
@@ -46,38 +48,46 @@ void FTTTBase::apply_decay()
 CellState FTTTBase::check_winner() const
 {
     using U = std::underlying_type_t<CellState>;
-    using Triplet = std::array<const Cell* const, 3>;
-    std::vector<Triplet> triplets;
+    using Line = std::vector<const Cell*>;
+    std::vector<Line> lines;
+    const decltype(m_board)::board_t& board = m_board.get_board();
+    std::size_t board_size = board.size();
 
-    for (std::size_t i = 0; i < 3; ++i) {
-        triplets.push_back({
-            &m_board.get_board()[i][0],
-            &m_board.get_board()[i][1],
-            &m_board.get_board()[i][2],
-        });
-        triplets.push_back({
-            &m_board.get_board()[0][i],
-            &m_board.get_board()[1][i],
-            &m_board.get_board()[2][i],
-        });
-    }
-    triplets.push_back({
-        &m_board.get_board()[0][0],
-        &m_board.get_board()[1][1],
-        &m_board.get_board()[2][2],
-    });
-    triplets.push_back({
-        &m_board.get_board()[0][2],
-        &m_board.get_board()[1][1],
-        &m_board.get_board()[2][0],
-    });
-
-    for (const auto& t : triplets)
+    for (std::size_t i = 0; i < board_size; ++i)
     {
-        const auto [c1, c2, c3] = t;
-        CellState state =
-            static_cast<CellState>(static_cast<U>(c1->get_cell_state()) & static_cast<U>(c2->get_cell_state()) &
-                                   static_cast<U>(c3->get_cell_state()));
+        Line row;
+        Line column;
+        row.reserve(board_size);
+        column.reserve(board_size);
+        for (std::size_t j = 0; j < board_size; ++j)
+        {
+            row.push_back(&m_board.get_board().at(i).at(j));
+            column.push_back(&m_board.get_board().at(j).at(i));
+        }
+        lines.push_back(std::move(row));
+        lines.push_back(std::move(column));
+    }
+    Line diagonal1;
+    Line diagonal2;
+    diagonal1.reserve(board_size);
+    diagonal2.reserve(board_size);
+    for (std::size_t i = 0, j = 0; i < board_size; ++i, ++j)
+    {
+        diagonal1.push_back(&m_board.get_board().at(i).at(j));
+        diagonal2.push_back(&m_board.get_board().at(i).at(board_size - 1 - j));
+    }
+    lines.push_back(std::move(diagonal1));
+    lines.push_back(std::move(diagonal2));
+
+    for (const auto& l : lines)
+    {
+        U state_underlying = std::numeric_limits<U>::max();
+        for (const auto& c : l)
+        {
+            state_underlying &= static_cast<U>(c->get_cell_state());
+        }
+
+        CellState state = static_cast<CellState>(state_underlying);
         if (state != CellState::EMPTY)
             return state;
     }

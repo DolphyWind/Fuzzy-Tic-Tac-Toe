@@ -1,13 +1,13 @@
-#ifndef __FTTTBOARD_CPP__
-#define __FTTTBOARD_CPP__
+#ifndef __FTTTBOARD_TPP__
+#define __FTTTBOARD_TPP__
 
 #include "FTTTBoard.hpp"
-#include "Cell.hpp"
 #include <gmpxx.h>
 
 namespace fttt
 {
-FTTTBoard::FTTTBoard(const mpq_class& capture_low_bound)
+template<std::size_t N>
+FTTTBoard<N>::FTTTBoard(const mpq_class& capture_low_bound)
 {
     for (auto& row : m_board)
     {
@@ -15,7 +15,8 @@ FTTTBoard::FTTTBoard(const mpq_class& capture_low_bound)
     }
 }
 
-void FTTTBoard::place(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class& value)
+template<std::size_t N>
+void FTTTBoard<N>::place(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class& value)
 {
     Cell& current_cell = m_board.at(y).at(x);
     mpq_class x_value = current_cell.get_Xval();
@@ -27,13 +28,16 @@ void FTTTBoard::place(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class
     current_cell.set_cell(x_value, o_value);
 }
 
-FTTTBoard::board_t& FTTTBoard::get_board() { return m_board; }
+template<std::size_t N>
+FTTTBoard<N>::board_t& FTTTBoard<N>::get_board() { return m_board; }
 
-const FTTTBoard::board_t& FTTTBoard::get_board() const { return m_board; }
+template<std::size_t N>
+const FTTTBoard<N>::board_t& FTTTBoard<N>::get_board() const { return m_board; }
 
-bool FTTTBoard::is_valid_placement(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class& value) const
+template<std::size_t N>
+bool FTTTBoard<N>::is_valid_placement(std::uint8_t x, std::uint8_t y, bool is_x, const mpq_class& value) const
 {
-    const Cell& cell = m_board[y][x];
+    const Cell& cell = m_board.at(y).at(x);
     if (cell.get_cell_state() != CellState::EMPTY)
         return false;
 
@@ -43,4 +47,4 @@ bool FTTTBoard::is_valid_placement(std::uint8_t x, std::uint8_t y, bool is_x, co
 }
 
 } // namespace fttt
-#endif // !__FTTTBOARD_CPP__
+#endif // !__FTTTBOARD_TPP__
