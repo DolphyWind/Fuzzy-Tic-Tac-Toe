@@ -1,7 +1,10 @@
 #include "Cell.hpp"
+#include "FTTTBase.hpp"
 #include "FTTTBoard.hpp"
+#include "GameConfig.hpp"
 #include <boost/python.hpp>
 #include <boost/python/return_internal_reference.hpp>
+#include <boost/python/return_value_policy.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <gmpxx.h>
 using namespace boost::python;
@@ -86,7 +89,50 @@ struct mpq_to_python {
     }
 };
 
+static mpq_class get_capture_low_bound(const fttt::GameConfig& cfg) {
+    return cfg.capture_low_bound;
+}
+
+static void set_capture_low_bound(fttt::GameConfig& cfg, const mpq_class& v) {
+    cfg.capture_low_bound = v;
+}
+
+static mpq_class get_decay(const fttt::GameConfig& cfg) {
+    return cfg.decay;
+}
+
+static void set_decay(fttt::GameConfig& cfg, const mpq_class& v) {
+    cfg.decay = v;
+}
+
+struct FTTTBaseWrap : fttt::FTTTBase, wrapper<fttt::FTTTBase>
+{
+    FTTTBaseWrap(const fttt::GameConfig& config) : fttt::FTTTBase(config) {}
+
+    void apply_decay()
+    {
+        if (override apply_decay = this->get_override("apply_decay"))
+        {
+            apply_decay();
+            return;
+        }
+        return fttt::FTTTBase::apply_decay();
+    }
+
+    void default_apply_decay() { this->fttt::FTTTBase::apply_decay(); }
+
+    void main_loop()
+    {
+        this->get_override("main_loop")();
+    }
+};
+// TODO: Do this
+
+#ifndef DEFAULT_BOARD_SIZE
 typedef fttt::FTTTBoard<3> DefaultBoard;
+#else
+typedef fttt::FTTTBoard<DEFAULT_BOARD_SIZE> DefaultBoard;
+#endif // !DEFAULT_BOARD_SIZE
 
 BOOST_PYTHON_MODULE(fttt)
 {
@@ -158,5 +204,29 @@ BOOST_PYTHON_MODULE(fttt)
             "is_valid_placement",
             &DefaultBoard::is_valid_placement
         )
+    ;
+
+    class_<fttt::GameConfig>("GameConfig", init<>())
+        .def(init<mpq_class, mpq_class>())
+        .add_property(
+            "capture_low_bound",
+            &get_capture_low_bound,
+            &set_capture_low_bound
+        )
+        .add_property(
+            "decay",
+            &get_decay,
+            &set_decay
+        )
+    ;
+
+    class_<FTTTBaseWrap, boost::noncopyable>("FTTTBase", no_init)
+        .def(init<const fttt::GameConfig&>())
+        .def("main_loop", pure_virtual(&FTTTBaseWrap::main_loop))
+        .def("apply_decay", &FTTTBaseWrap::apply_decay, &FTTTBaseWrap::default_apply_decay)
+        .def("check_winner", &FTTTBaseWrap::check_winner)
+        .def("has_moves", &FTTTBaseWrap::has_moves)
+        .def("game_ended", &FTTTBaseWrap::game_ended)
+        .def("finalize", &FTTTBaseWrap::finalize)
     ;
 }
